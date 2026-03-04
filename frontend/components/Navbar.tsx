@@ -14,7 +14,6 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link href="/" className="navbar-brand">
-        <span className="logo-dot">🎓</span>
         KU Lost &amp; Found
       </Link>
       <ul className="navbar-links">

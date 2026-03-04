@@ -1,8 +1,29 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import ImageDropZone from "@/components/ImageDropZone";
 
 const API = "http://localhost:8000";
+
+/* ── KU campus places (always available as suggestions) ── */
+const KU_PLACES = [
+  "อาคารเรียนรวม",
+  "ตึกวิศวกรรม",
+  "คณะวิทยาศาสตร์",
+  "คณะมนุษยศาสตร์",
+  "คณะเศรษฐศาสตร์",
+  "คณะบริหารธุรกิจ",
+  "คณะสังคมศาสตร์",
+  "คณะเกษตร",
+  "สำนักหอสมุด",
+  "โรงอาหารกลาง 1",
+  "โรงอาหารกลาง 2",
+  "ศาลาหกเหลี่ยม",
+  "อาคารจอดรถ",
+  "สนามกีฬา",
+  "หอพักนิสิต",
+  "KU Happy Place",
+  "ศูนย์เรียนรวม",
+];
 
 interface Result {
   id: string;
@@ -18,17 +39,37 @@ interface Result {
 }
 
 export default function SearchPage() {
-  const [query, setQuery]   = useState("");
-  const [image, setImage]   = useState<File | null>(null);
-  const [tab, setTab]       = useState<"all" | "lost" | "found">("all");
-  const [results, setResults] = useState<Result[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [error, setError]   = useState("");
+  const [query, setQuery]         = useState("");
+  const [image, setImage]         = useState<File | null>(null);
+  const [tab, setTab]             = useState<"all" | "lost" | "found">("all");
+  const [location, setLocation]   = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime]     = useState("");
+  const [locations, setLocations] = useState<string[]>([]);
+  const [results, setResults]     = useState<Result[]>([]);
+  const [loading, setLoading]     = useState(false);
+  const [searched, setSearched]   = useState(false);
+  const [error, setError]         = useState("");
+
+  /* Fetch available locations from backend + merge with KU defaults */
+  useEffect(() => {
+    fetch(`${API}/locations`)
+      .then((r) => r.json())
+      .then((data) => {
+        const backend: string[] = data.locations ?? [];
+        const merged = Array.from(new Set([...KU_PLACES, ...backend])).sort(
+          (a, b) => a.localeCompare(b, "th")
+        );
+        setLocations(merged);
+      })
+      .catch(() => setLocations([...KU_PLACES].sort((a, b) => a.localeCompare(b, "th"))));
+  }, []);
 
   const handleSearch = async (e?: FormEvent) => {
     e?.preventDefault();
-    if (!query.trim() && !image) return;
+    const hasActiveFilter = query.trim() || image || location || startTime || endTime;
+    if (!hasActiveFilter) return;
+    
     setLoading(true);
     setSearched(true);
     setError("");
@@ -37,6 +78,9 @@ export default function SearchPage() {
     fd.append("query", query);
     fd.append("target_type", tab);
     fd.append("n_results", "20");
+    if (location) fd.append("location", location);
+    if (startTime) fd.append("start_time", startTime);
+    if (endTime) fd.append("end_time", endTime);
     if (image) fd.append("image", image);
 
     try {
@@ -72,7 +116,7 @@ export default function SearchPage() {
         marginBottom: "2rem",
         display: "flex",
         flexDirection: "column",
-        gap: "1rem",
+        gap: "1.2rem",
       }}>
         {/* Text */}
         <div style={{ display: "flex", gap: "0.75rem" }}>
@@ -88,7 +132,7 @@ export default function SearchPage() {
             id="search-btn"
             className="btn btn-primary"
             type="submit"
-            disabled={loading || (!query.trim() && !image)}
+            disabled={loading || !(query.trim() || image || location || startTime || endTime)}
           >
             {loading ? "กำลังค้น..." : "ค้นหา"}
           </button>
@@ -102,23 +146,180 @@ export default function SearchPage() {
           <ImageDropZone value={image} onChange={setImage} />
         </details>
 
-        {/* Filter tabs */}
-        <div className="tabs" style={{ marginBottom: 0 }}>
-          {[
-            { key: "all", label: "ทั้งหมด" },
-            { key: "lost", label: "😟 รายการหาย" },
-            { key: "found", label: "🎉 รายการเจอ" },
-          ].map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              className={`tab-btn ${tab === t.key ? "active" : ""}`}
-              onClick={() => setTab(t.key as typeof tab)}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* ── Additional Filters row ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: "1rem",
+        }}>
+          {/* Type filter tabs */}
+          <div>
+            <div style={{
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              color: "var(--text-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              marginBottom: "0.4rem",
+            }}>
+              ประเภท
+            </div>
+            <div className="tabs" style={{ marginBottom: 0 }}>
+              {[
+                { key: "all", label: "ทั้งหมด" },
+                { key: "lost", label: "😟 หาย" },
+                { key: "found", label: "🎉 เจอ" },
+              ].map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  className={`tab-btn ${tab === t.key ? "active" : ""}`}
+                  onClick={() => setTab(t.key as typeof tab)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Location filter */}
+          <div>
+            <div style={{
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              color: "var(--text-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              marginBottom: "0.4rem",
+            }}>
+              📍 สถานที่
+            </div>
+            <div style={{ position: "relative" }}>
+              <select
+                id="search-location"
+                className="form-input"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                style={{
+                  fontSize: "0.85rem",
+                  padding: "0.55rem 1rem",
+                  borderRadius: "999px",
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                }}
+              >
+                <option value="">ทุกสถานที่</option>
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
+                ))}
+              </select>
+              <div style={{
+                position: "absolute",
+                right: "0.9rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
+                fontSize: "0.6rem",
+                color: "var(--text-muted)",
+              }}>▼</div>
+            </div>
+          </div>
+
+          {/* Time range row */}
+          <div style={{
+            gridColumn: "1 / -1",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: "1rem",
+            padding: "1rem",
+            background: "rgba(255,255,255,0.02)",
+            border: "1px dashed var(--border-subtle)",
+            borderRadius: "var(--radius-md)",
+            marginTop: "0.5rem",
+          }}>
+            <div>
+              <div style={{
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                color: "var(--text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                marginBottom: "0.3rem",
+              }}>
+                ตั้งแต่เวลา
+              </div>
+              <input
+                type="datetime-local"
+                className="form-input"
+                style={{ fontSize: "0.8rem", padding: "0.45rem 0.8rem", borderRadius: "var(--radius-sm)" }}
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+            </div>
+            <div>
+              <div style={{
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                color: "var(--text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                marginBottom: "0.3rem",
+              }}>
+                ถึงเวลา
+              </div>
+              <input
+                type="datetime-local"
+                className="form-input"
+                style={{ fontSize: "0.8rem", padding: "0.45rem 0.8rem", borderRadius: "var(--radius-sm)" }}
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
+
+        {/* Active filter chips */}
+        {(location || startTime || endTime) && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.6rem",
+            flexWrap: "wrap",
+            paddingTop: "0.4rem",
+            borderTop: "1px solid var(--border-subtle)",
+          }}>
+            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontWeight: 500 }}>
+              ตัวกรองที่ใช้งาน:
+            </span>
+            {location && (
+              <span className="filter-chip">
+                📍 {location}
+                <button type="button" onClick={() => setLocation("")}>×</button>
+              </span>
+            )}
+            {startTime && (
+              <span className="filter-chip">
+                🕒 ตั้งแต่: {startTime.replace("T", " ")}
+                <button type="button" onClick={() => setStartTime("")}>×</button>
+              </span>
+            )}
+            {endTime && (
+              <span className="filter-chip">
+                📅 จนถึง: {endTime.replace("T", " ")}
+                <button type="button" onClick={() => setEndTime("")}>×</button>
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => { setLocation(""); setStartTime(""); setEndTime(""); }}
+              style={{
+                background: "none", border: "none", color: "var(--ku-gold)", fontSize: "0.75rem",
+                fontWeight: 600, cursor: "pointer", textDecoration: "underline", marginLeft: "auto"
+              }}>
+              ล้างทั้งหมด
+            </button>
+          </div>
+        )}
       </form>
 
       {/* ── Error ── */}
@@ -137,6 +338,9 @@ export default function SearchPage() {
         <>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
             พบ <strong style={{ color: "var(--text-primary)" }}>{results.length}</strong> รายการที่ตรงกัน
+            {location && (
+              <span style={{ color: "var(--text-muted)" }}> — สถานที่: {location}</span>
+            )}
           </p>
           <div className="results-grid">
             {results.map((item, i) => (
@@ -199,7 +403,7 @@ export default function SearchPage() {
         <div className="empty fade-in">
           <div className="empty-icon">🔍</div>
           <h3>ไม่พบรายการที่ตรงกัน</h3>
-          <p>ลองเปลี่ยนคำค้นหา หรือตรวจสอบว่าเปิด Backend ไว้แล้ว</p>
+          <p>ลองเปลี่ยนคำค้นหา{location ? " หรือลองเปลี่ยนสถานที่" : ""} หรือตรวจสอบว่าเปิด Backend ไว้แล้ว</p>
         </div>
       )}
 

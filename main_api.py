@@ -185,7 +185,7 @@ async def _create_report(
         "name": name,
         "description": description,
         "location": location,
-        "report_time": report_time or time.strftime("%Y-%m-%d %H:%M"),
+        "report_time": (report_time.replace("T", " ") if report_time else time.strftime("%Y-%m-%d %H:%M")),
         "image_path": None,
         "clip_image_emb": None,
         "clip_text_emb": None,
@@ -223,10 +223,20 @@ async def list_items(item_type: str):
     return {"items": [_to_response(i) for i in items]}
 
 
+@app.get("/locations")
+async def list_locations():
+    """Return all unique non-empty locations from reported items."""
+    locs = sorted({i["location"] for i in ITEMS if i.get("location")})
+    return {"locations": locs}
+
+
 @app.post("/search")
 async def search(
     query: str = Form(""),
     target_type: str = Form("all"),   # "lost", "found", or "all"
+    location: str = Form(""),         # filter by location (substring match)
+    start_time: str = Form(""),       # "YYYY-MM-DD HH:MM" or "YYYY-MM-DDTHH:MM"
+    end_time: str = Form(""),         # "YYYY-MM-DD HH:MM" or "YYYY-MM-DDTHH:MM"
     image: Optional[UploadFile] = File(None),
     n_results: int = Form(12),
 ):
@@ -234,6 +244,24 @@ async def search(
         raise HTTPException(400, "Provide at least a text query or an image.")
 
     pool = ITEMS if target_type == "all" else [i for i in ITEMS if i["type"] == target_type]
+
+    # Filter by location if specified
+    if location:
+        pool = [i for i in pool if location.lower() in i.get("location", "").lower()]
+
+    # Filter by time if specified
+    if start_time or end_time:
+        s = start_time.replace("T", " ")
+        e = end_time.replace("T", " ")
+        filtered = []
+        for item in pool:
+            t = item.get("report_time", "")
+            if s and t < s:
+                continue
+            if e and t > e:
+                continue
+            filtered.append(item)
+        pool = filtered
 
     if not pool:
         return {"results": []}

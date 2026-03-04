@@ -41,7 +41,7 @@ export default function LandingPage() {
           letterSpacing: "-0.04em",
           lineHeight: 1.15,
           marginBottom: "1rem",
-          background: "linear-gradient(135deg, #f0f4f1 40%, #c9a227)",
+          background: "linear-gradient(135deg, #1a5c38 40%, #c9a227)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
@@ -61,10 +61,10 @@ export default function LandingPage() {
 
         <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/report/lost" className="btn btn-primary btn-lg">
-            😟 ฉันทำของหาย
+            😟 ทำของหาย
           </Link>
           <Link href="/report/found" className="btn btn-gold btn-lg">
-            🎉 ฉันเจอของ
+            🎉 เจอของ
           </Link>
           <Link href="/search" className="btn btn-outline btn-lg">
             🔍 ค้นหาสิ่งของ
