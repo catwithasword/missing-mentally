@@ -39,9 +39,6 @@ interface Result {
 }
 
 export default function SearchPage() {
-  const date = new Date().toUTCString().slice(0, 16);
-  // console.log("Today's date:", date);
-
   const [query, setQuery] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [tab, setTab] = useState<"all" | "lost" | "found">("all");
@@ -53,6 +50,15 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
+
+  const toDateTimeLocal = (d: Date) => {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+      d.getHours(),
+    )}:${pad(d.getMinutes())}`;
+  };
+
+  const nowLocal = toDateTimeLocal(new Date());
 
   /* Fetch available locations from backend + merge with KU defaults */
   useEffect(() => {
@@ -178,7 +184,7 @@ export default function SearchPage() {
           >
             📸 ค้นหาด้วยรูปภาพ (ไม่บังคับ)
           </summary>
-          <ImageDropZone value={image} onChange={handleImageSearch}/>
+          <ImageDropZone value={image} onChange={handleImageSearch} />
         </details>
 
         {/* ── Additional Filters row ── */}
@@ -309,10 +315,9 @@ export default function SearchPage() {
                   padding: "0.45rem 0.8rem",
                   borderRadius: "var(--radius-sm)",
                 }}
-                max={date}
                 value={startTime}
                 onChange={(e) => {
-                  if (e.target.value && e.target.value <= date) {
+                  if (e.target.value && e.target.value <= nowLocal) {
                     if (!endTime) {
                       setEndTime(e.target.value);
                     } else if (endTime && e.target.value <= endTime) {
@@ -352,12 +357,13 @@ export default function SearchPage() {
                   padding: "0.45rem 0.8rem",
                   borderRadius: "var(--radius-sm)",
                 }}
+                max={nowLocal}
                 value={endTime}
                 onChange={(e) => {
                   if (
                     e.target.value &&
                     e.target.value >= startTime &&
-                    e.target.value <= date
+                    e.target.value <= nowLocal
                   ) {
                     setEndTime(e.target.value);
                   } else {
@@ -502,7 +508,7 @@ export default function SearchPage() {
                       {item.type === "lost" ? "😟 หาย" : "🎉 เจอ"}
                     </span>
                     <span className="badge badge-score">
-                      {(item.score * 100).toFixed(0)}% match
+                      {item.score ? (item.score * 100).toFixed(0) : "0"}% match
                     </span>
                   </div>
                   <div className="result-card-title">{item.name}</div>
