@@ -64,7 +64,7 @@ export default function LandingPage() {
             😟 ทำของหาย
           </Link>
           <Link href="/report/found" className="btn btn-gold btn-lg">
-            🎉 เจอของ
+            🎉 พบของหาย
           </Link>
           <Link href="/search" className="btn btn-outline btn-lg">
             🔍 ค้นหาสิ่งของ
@@ -81,8 +81,8 @@ export default function LandingPage() {
         margin: "0 auto 4rem",
       }}>
         {[
-          { label: "รายการหาย", value: stats.lost_items, color: "var(--lost-color)" },
-          { label: "รายการเจอ", value: stats.found_items, color: "var(--found-color)" },
+          { label: "รายการของหาย", value: stats.lost_items, color: "var(--lost-color)" },
+          { label: "รายการเจอของหาย", value: stats.found_items, color: "var(--found-color)" },
         ].map((s) => (
           <div key={s.label} className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
             <div style={{ fontSize: "2rem", fontWeight: 800, color: s.color }}>{s.value}</div>
@@ -94,10 +94,10 @@ export default function LandingPage() {
       {/* ── How it works ── */}
       <section style={{ maxWidth: 860, margin: "0 auto" }}>
         <h2 style={{ textAlign: "center", fontSize: "1.4rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-          วิธีการทำงาน
+          How It Works
         </h2>
         <p style={{ textAlign: "center", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "2.5rem" }}>
-          ระบบ AI ของเราจะจับคู่ของหายอัตโนมัติด้วย 2 เทคโนโลยี
+          Our AI system automatically matches lost and found items using two advanced technologies
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.2rem" }}>
@@ -105,20 +105,20 @@ export default function LandingPage() {
             {
               num: "01",
               emoji: "📸",
-              title: "แจ้งรายการ",
-              desc: "ถ่ายรูปสิ่งของและกรอกรายละเอียด เช่น สถานที่และเวลาที่พบ/หาย",
+              title: "Submit an Item",
+              desc: "Capture an image of the item and provide relevant details such as the location and time it was found or lost.",
             },
             {
               num: "02",
               emoji: "🤖",
-              title: "AI วิเคราะห์",
-              desc: "CLIP Image Matching + LLM Semantic Search สแกนฐานข้อมูลเพื่อหาคู่ที่ตรงกัน",
+              title: "AI Analysis",
+              desc: "The system utilizes CLIP-based image matching and LLM-powered semantic search to scan the database and identify potential matches.",
             },
             {
               num: "03",
               emoji: "✅",
-              title: "จับคู่สำเร็จ",
-              desc: "ระบบแสดงผลลัพธ์จากคะแนน AI รวมทั้งภาพและข้อความที่คล้ายกันมากที่สุด",
+              title: "Match Results",
+              desc: "The system presents the most relevant results based on AI scoring, including items with highly similar images and descriptions.",
             },
           ].map((step) => (
             <div key={step.num} className="card" style={{ padding: "1.5rem" }}>

@@ -125,7 +125,7 @@ export default function SearchPage() {
             className="form-input"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="พิมพ์คำค้นหา เช่น กระเป๋าสีดำ, กุญแจรถ..."
+            placeholder="สิ่งของที่ต้องการค้นหา เช่น กระเป๋าสีดำ, กุญแจรถ..."
             style={{ flex: 1 }}
           />
           <button
@@ -141,7 +141,7 @@ export default function SearchPage() {
         {/* Image (optional) */}
         <details style={{ fontSize: "0.85rem" }}>
           <summary style={{ cursor: "pointer", color: "var(--text-secondary)", userSelect: "none", marginBottom: "0.8rem" }}>
-            📸 ค้นหาด้วยรูปภาพ (ไม่บังคับ)
+            📸 ค้นหาสิ่งของด้วยรูปภาพ (ไม่บังคับ)
           </summary>
           <ImageDropZone value={image} onChange={setImage} />
         </details>
@@ -168,7 +168,7 @@ export default function SearchPage() {
               {[
                 { key: "all", label: "ทั้งหมด" },
                 { key: "lost", label: "😟 หาย" },
-                { key: "found", label: "🎉 เจอ" },
+                { key: "found", label: "🎉 พบ" },
               ].map((t) => (
                 <button
                   key={t.key}
@@ -246,7 +246,7 @@ export default function SearchPage() {
                 letterSpacing: "0.06em",
                 marginBottom: "0.3rem",
               }}>
-                ตั้งแต่เวลา
+                ตั้งแต่วันที่
               </div>
               <input
                 type="datetime-local"
@@ -265,7 +265,7 @@ export default function SearchPage() {
                 letterSpacing: "0.06em",
                 marginBottom: "0.3rem",
               }}>
-                ถึงเวลา
+                ถึงวันที่
               </div>
               <input
                 type="datetime-local"
@@ -362,7 +362,7 @@ export default function SearchPage() {
                 <div className="result-card-body">
                   <div className="result-card-meta">
                     <span className={`badge badge-${item.type}`}>
-                      {item.type === "lost" ? "😟 หาย" : "🎉 เจอ"}
+                      {item.type === "lost" ? "😟 หาย" : "🎉 พบ"}
                     </span>
                     <span className="badge badge-score">
                       {(item.score * 100).toFixed(0)}% match
@@ -412,7 +412,7 @@ export default function SearchPage() {
         <div className="empty">
           <div className="empty-icon">✨</div>
           <h3>พร้อมค้นหา</h3>
-          <p>พิมพ์คำค้นหาด้านบนเพื่อให้ AI ช่วยหาของที่ตรงกัน</p>
+          <p>พิมพ์ชื่อสิ่งของหรือแนบรูปภาพสิ่งของที่ต้องการค้นหาไว้ด้านบนเพื่อให้ AI ช่วยหาของที่ตรงกัน</p>
         </div>
       )}
     </main>

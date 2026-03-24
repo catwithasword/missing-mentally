@@ -57,7 +57,7 @@ export default function ReportLostPage() {
   return (
     <main className="page page-sm">
       <div style={{ marginBottom: "0.4rem" }}>
-        <span className="badge badge-lost">😟 รายการหาย</span>
+        <span className="badge badge-lost">😟 รายการของหาย</span>
       </div>
       <h1 className="section-title">แจ้งของหาย</h1>
       <p className="section-sub">กรอกรายละเอียดสิ่งของที่หายไป AI จะค้นหารายการที่ตรงกันให้อัตโนมัติ</p>
@@ -68,12 +68,12 @@ export default function ReportLostPage() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label className="form-label">รูปภาพสิ่งของ (ไม่บังคับ)</label>
+          <label className="form-label">รูปภาพของสิ่งของ (ไม่บังคับ)</label>
           <ImageDropZone value={image} onChange={setImage} />
         </div>
 
         <div className="form-group">
-          <label className="form-label">ชื่อสิ่งของ *</label>
+          <label className="form-label">สิ่งของ *</label>
           <input
             className="form-input"
             placeholder="เช่น กระเป๋าสตางค์สีน้ำเงิน, กุญแจรถ"
@@ -87,7 +87,7 @@ export default function ReportLostPage() {
           <label className="form-label">รายละเอียด</label>
           <textarea
             className="form-textarea"
-            placeholder="อธิบายสิ่งของ สี แบรนด์ ลักษณะพิเศษ..."
+            placeholder="อธิบายลักษณะของสิ่งของ เช่น สี แบรนด์ ลักษณะพิเศษ..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -95,10 +95,10 @@ export default function ReportLostPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div className="form-group">
-            <label className="form-label">สถานที่ที่หาย</label>
+            <label className="form-label">สถานที่ที่พบเห็นล่าสุด</label>
             <input
               className="form-input"
-              placeholder="เช่น ตึกวิศวกรรม, โรงอาหาร"
+              placeholder="เช่น ตึกวิศวกรรม, โรงอาหารกลาง 2"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
             />

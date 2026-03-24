@@ -3,10 +3,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/report/lost", label: "Report Lost" },
-  { href: "/report/found", label: "Report Found" },
-  { href: "/search", label: "Browse & Search" },
+  { href: "/", label: "หน้าแรก" },
+  { href: "/report/lost", label: "แจ้งของหาย" },
+  { href: "/report/found", label: "แจ้งพบของหาย" },
+  { href: "/search", label: "ค้นหาสิ่งของ" },
 ];
 
 export default function Navbar() {
