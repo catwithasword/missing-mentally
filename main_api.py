@@ -60,10 +60,12 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 # ──────────────────────────────────────────────
 embedding_fn = OpenCLIPEmbeddingFunction()
 
+
 def clip_embed_image_array(img_array: np.ndarray) -> np.ndarray:
     """Get CLIP embedding for a numpy image array."""
     result = embedding_fn._encode_image(img_array)
     return np.array(result, dtype=np.float32)
+
 
 def clip_embed_text(text: str) -> np.ndarray:
     """Get CLIP embedding for a text string."""
@@ -115,8 +117,11 @@ ITEMS: List[dict] = []
 
 def _to_response(item: dict) -> dict:
     """Strip numpy arrays before returning to client."""
-    return {k: v for k, v in item.items()
-            if k not in ("clip_image_emb", "clip_text_emb", "llm_text_emb")}
+    return {
+        k: v
+        for k, v in item.items()
+        if k not in ("clip_image_emb", "clip_text_emb", "llm_text_emb")
+    }
 
 
 # ──────────────────────────────────────────────
@@ -136,6 +141,7 @@ async def process_image(file: UploadFile) -> tuple[str, np.ndarray]:
 # ──────────────────────────────────────────────
 # Routes
 # ──────────────────────────────────────────────
+
 
 @app.get("/health")
 async def health():
@@ -168,7 +174,9 @@ async def report_found(
     report_time: str = Form(""),
     image: Optional[UploadFile] = File(None),
 ):
-    return await _create_report("found", name, description, location, report_time, image)
+    return await _create_report(
+        "found", name, description, location, report_time, image
+    )
 
 
 async def _create_report(
@@ -185,7 +193,11 @@ async def _create_report(
         "name": name,
         "description": description,
         "location": location,
-        "report_time": (report_time.replace("T", " ") if report_time else time.strftime("%Y-%m-%d %H:%M")),
+        "report_time": (
+            report_time.replace("T", " ")
+            if report_time
+            else time.strftime("%Y-%m-%d %H:%M")
+        ),
         "image_path": None,
         "clip_image_emb": None,
         "clip_text_emb": None,
@@ -219,7 +231,9 @@ async def _create_report(
 async def list_items(item_type: str):
     if item_type not in ("lost", "found", "all"):
         raise HTTPException(400, "item_type must be lost, found, or all")
-    items = ITEMS if item_type == "all" else [i for i in ITEMS if i["type"] == item_type]
+    items = (
+        ITEMS if item_type == "all" else [i for i in ITEMS if i["type"] == item_type]
+    )
     return {"items": [_to_response(i) for i in items]}
 
 
@@ -233,17 +247,38 @@ async def list_locations():
 @app.post("/search")
 async def search(
     query: str = Form(""),
-    target_type: str = Form("all"),   # "lost", "found", or "all"
-    location: str = Form(""),         # filter by location (substring match)
-    start_time: str = Form(""),       # "YYYY-MM-DD HH:MM" or "YYYY-MM-DDTHH:MM"
-    end_time: str = Form(""),         # "YYYY-MM-DD HH:MM" or "YYYY-MM-DDTHH:MM"
+    target_type: str = Form("all"),  # "lost", "found", or "all"
+    location: str = Form(""),  # filter by location (substring match)
+    start_time: str = Form(""),  # "YYYY-MM-DD HH:MM" or "YYYY-MM-DDTHH:MM"
+    end_time: str = Form(""),  # "YYYY-MM-DD HH:MM" or "YYYY-MM-DDTHH:MM"
     image: Optional[UploadFile] = File(None),
     n_results: int = Form(12),
 ):
+    # Return all items if no search criteria provided
+    if (
+        not query
+        and (not image or not image.filename)
+        and not location
+        and not start_time
+        and not end_time
+    ):
+        pool = (
+            ITEMS
+            if target_type == "all"
+            else [i for i in ITEMS if i["type"] == target_type]
+        )
+        print("Items", ITEMS)
+        print("pool", pool)
+        return {"results": [_to_response(i) for i in pool]}
+
     if not query and (not image or not image.filename):
         raise HTTPException(400, "Provide at least a text query or an image.")
 
-    pool = ITEMS if target_type == "all" else [i for i in ITEMS if i["type"] == target_type]
+    pool = (
+        ITEMS
+        if target_type == "all"
+        else [i for i in ITEMS if i["type"] == target_type]
+    )
 
     # Filter by location if specified
     if location:
@@ -295,7 +330,9 @@ async def search(
 
         # Image-to-image similarity
         if query_clip_img_emb is not None and item.get("clip_image_emb") is not None:
-            img_score = max(img_score, cosine_sim(query_clip_img_emb, item["clip_image_emb"]))
+            img_score = max(
+                img_score, cosine_sim(query_clip_img_emb, item["clip_image_emb"])
+            )
             has_img_signal = True
 
         # Text query → CLIP text embedding vs item CLIP image embedding
@@ -317,7 +354,9 @@ async def search(
             has_txt_signal = True
         elif query and not has_txt_signal:
             # Keyword fallback
-            text_score = keyword_similarity(query, f"{item['name']} {item['description']}")
+            text_score = keyword_similarity(
+                query, f"{item['name']} {item['description']}"
+            )
 
         # Weighted combination
         combined = 0.0
@@ -330,12 +369,14 @@ async def search(
         else:
             combined = text_score  # keyword fallback only
 
-        scored.append({
-            **_to_response(item),
-            "image_score": round(img_score, 4),
-            "text_score": round(text_score, 4),
-            "score": round(combined, 4),
-        })
+        scored.append(
+            {
+                **_to_response(item),
+                "image_score": round(img_score, 4),
+                "text_score": round(text_score, 4),
+                "score": round(combined, 4),
+            }
+        )
 
     scored.sort(key=lambda x: x["score"], reverse=True)
     return {"results": scored[:n_results]}
