@@ -178,8 +178,8 @@ body::before {
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
+  transform: none;
+  box-shadow: none;
   border-color: rgba(42, 122, 78, 0.25);
 }
 

@@ -55,6 +55,13 @@ export default function ReportFoundPage() {
       <main className="page page-sm">
         <div style={{ textAlign: "center", paddingTop: "3rem" }}>
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🎉</div>
+          <h1 className="section-title" style={{ marginBottom: "0.6rem" }}>ขอบคุณที่ช่วยเหลือ!</h1>
+          <p className="section-sub">ระบบจะแจ้งเตือนเจ้าของของโดยอัตโนมัติ</p>
+          <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap", marginTop: "1.5rem" }}>
+            <Link href="/search" className="btn btn-primary">🔍 ดูรายการทั้งหมด</Link>
+            <button className="btn btn-outline" onClick={() => {
+              setStatus("idle"); setName(""); setDescription(""); setLocation(""); setTime(""); setImage(null);
+            }}>แจ้งอีกรายการ</button>
           <h1 className="section-title" style={{ marginBottom: "0.6rem" }}>
             ขอบคุณที่ช่วยเหลือ!
           </h1>
@@ -95,7 +102,7 @@ export default function ReportFoundPage() {
   return (
     <main className="page page-sm">
       <div style={{ marginBottom: "0.4rem" }}>
-        <span className="badge badge-found">🎉 รายการเจอ</span>
+        <span className="badge badge-found">🎉 รายการพบของหาย</span>
       </div>
       <h1 className="section-title">แจ้งของเจอ</h1>
       <p className="section-sub">
@@ -108,12 +115,12 @@ export default function ReportFoundPage() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label className="form-label">รูปภาพสิ่งของ (แนะนำ)</label>
+          <label className="form-label">รูปภาพของสิ่งของ (แนะนำ)</label>
           <ImageDropZone value={image} onChange={setImage} />
         </div>
 
         <div className="form-group">
-          <label className="form-label">ชื่อสิ่งของ *</label>
+          <label className="form-label">สิ่งของ *</label>
           <input
             className="form-input"
             placeholder="เช่น กุญแจรถ, หูฟัง AirPods"
@@ -141,10 +148,10 @@ export default function ReportFoundPage() {
           }}
         >
           <div className="form-group">
-            <label className="form-label">สถานที่ที่พบ</label>
+            <label className="form-label">สถานที่ที่พบเห็นล่าสุด</label>
             <input
               className="form-input"
-              placeholder="เช่น ห้องสมุด, อาคาร 6"
+              placeholder="เช่น สำนักหอสมุด, โรงอาหารกลาง 1"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
             />
@@ -175,7 +182,7 @@ export default function ReportFoundPage() {
           disabled={status === "loading" || !name.trim()}
           style={{ width: "100%", marginTop: "0.5rem" }}
         >
-          {status === "loading" ? "กำลังส่ง..." : "📨 ส่งรายการแจ้งของเจอ"}
+          {status === "loading" ? "กำลังส่ง..." : "📨 ส่งรายการแจ้งพบของหาย"}
         </button>
       </form>
     </main>
