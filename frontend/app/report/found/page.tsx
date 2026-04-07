@@ -55,13 +55,6 @@ export default function ReportFoundPage() {
       <main className="page page-sm">
         <div style={{ textAlign: "center", paddingTop: "3rem" }}>
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🎉</div>
-          <h1 className="section-title" style={{ marginBottom: "0.6rem" }}>ขอบคุณที่ช่วยเหลือ!</h1>
-          <p className="section-sub">ระบบจะแจ้งเตือนเจ้าของของโดยอัตโนมัติ</p>
-          <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap", marginTop: "1.5rem" }}>
-            <Link href="/search" className="btn btn-primary">🔍 ดูรายการทั้งหมด</Link>
-            <button className="btn btn-outline" onClick={() => {
-              setStatus("idle"); setName(""); setDescription(""); setLocation(""); setTime(""); setImage(null);
-            }}>แจ้งอีกรายการ</button>
           <h1 className="section-title" style={{ marginBottom: "0.6rem" }}>
             ขอบคุณที่ช่วยเหลือ!
           </h1>

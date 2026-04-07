@@ -94,10 +94,10 @@ export default function LandingPage() {
       {/* ── How it works ── */}
       <section style={{ maxWidth: 860, margin: "0 auto" }}>
         <h2 style={{ textAlign: "center", fontSize: "1.4rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-          How It Works
+          วิธีการทำงาน
         </h2>
         <p style={{ textAlign: "center", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "2.5rem" }}>
-          Our AI system automatically matches lost and found items using two advanced technologies
+          ระบบ AI ของเราจะจับคู่สิ่งของที่สูญหายและสิ่งของที่พบโดยอัตโนมัติด้วยเทคโนโลยีสองรูปแบบ
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.2rem" }}>
@@ -105,20 +105,20 @@ export default function LandingPage() {
             {
               num: "01",
               emoji: "📸",
-              title: "Submit an Item",
-              desc: "Capture an image of the item and provide relevant details such as the location and time it was found or lost.",
+              title: "ส่งข้อมูลรายการ",
+              desc: "ถ่ายรูปสิ่งของและระบุรายละเอียดที่เกี่ยวข้อง เช่น สถานที่ และวันเวลาที่พบหรือทำหาย",
             },
             {
               num: "02",
               emoji: "🤖",
-              title: "AI Analysis",
-              desc: "The system utilizes CLIP-based image matching and LLM-powered semantic search to scan the database and identify potential matches.",
+              title: "การวิเคราะห์ด้วย AI",
+              desc: "ระบบใช้การจับคู่รูปภาพด้วย CLIP และ semantic search โดยใช้ LLM เพื่อสแกนฐานข้อมูลและระบุรายการที่อาจจะสัมพันธ์กัน",
             },
             {
               num: "03",
               emoji: "✅",
-              title: "Match Results",
-              desc: "The system presents the most relevant results based on AI scoring, including items with highly similar images and descriptions.",
+              title: "ผลการจับคู่",
+              desc: "ระบบจะแสดงผลลัพธ์ที่เกี่ยวข้องมากที่สุดโดยอิงตามการให้คะแนนของ AI รวมถึงรายการที่มีรูปภาพและคำอธิบายที่คล้ายคลึงกัน",
             },
           ].map((step) => (
             <div key={step.num} className="card" style={{ padding: "1.5rem" }}>
@@ -133,7 +133,7 @@ export default function LandingPage() {
                 marginBottom: "0.8rem",
                 letterSpacing: "0.08em",
               }}>
-                STEP {step.num}
+                ขั้นตอนที่ {step.num}
               </div>
               <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>{step.emoji}</div>
               <h3 style={{ fontWeight: 700, marginBottom: "0.4rem" }}>{step.title}</h3>
